@@ -8,9 +8,9 @@ function Navbar() {
         <nav style={styles.nav}>
             <Link to="/" style={styles.brand}>FitPilot</Link>
             <div style={styles.links}>
-                <Link t="/" style={styles.link}>Dashboard</Link>
-                <Link t="/workouts/new" style={styles.link}>Log Workout</Link>
-                <Link t="/exercises" style={styles.link}>Exercises</Link>
+                <Link to="/" style={styles.link}>Dashboard</Link>
+                <Link to="/workouts/new" style={styles.link}>Log Workout</Link>
+                <Link to="/exercises" style={styles.link}>Exercises</Link>
                 <span style={styles.userName}>{user?.fullName}</span>
                 <button onClick={logout} style={styles.logoutBtn}>Logout</button>
             </div>
