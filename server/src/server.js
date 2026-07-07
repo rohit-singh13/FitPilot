@@ -7,6 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const exerciseRoutes = require('./routes/exerciseRoutes');
 const workoutRoutes = require('./routes/workoutRoutes');
+const statsRoutes = require('./routes/statsRoutes');
 
 //Connect to MongoDB
 connectDB();
@@ -25,6 +26,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/exercises', exerciseRoutes);
 app.use('/api/workouts', workoutRoutes);
+app.use('/api/stats', statsRoutes);
 
 // Error handler
 app.use(errorHandler);

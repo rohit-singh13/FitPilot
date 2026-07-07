@@ -5,13 +5,20 @@ import Navbar from '../components/Navbar';
 
 function Dashboard() {
     const [workouts, setWorkouts] = useState([]);
+    const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
     useEffect(() => {
-        api.get('/workouts')
-            .then((res) => setWorkouts(res.data))
-            .catch(() => setError('Failed to load workouts'))
+        Promise.all([
+            api.get('/workouts'),
+            api.get('/stats/summary'),
+        ])
+            .then(([workoutsRes, statsRes]) => {
+                setWorkouts(workoutsRes.data);
+                setStats(statsRes.data);
+            })
+            .catch(() => setError('Failed to load dashboard data'))
             .finally(() => setLoading(false));
     }, []);
 
@@ -26,6 +33,23 @@ function Dashboard() {
 
                 {loading && <p>Loading...</p>}
                 {error && <p style={{ color: 'red' }}>{error}</p>}
+
+                {stats && (
+                    <div style={styles.statsRow}>
+                        <div style={styles.statCard}>
+                            <div style={styles.statValue}>{stats.totalWorkouts}</div>
+                            <div style={styles.statLabel}>Workouts logged</div>
+                        </div>
+                        <div style={styles.statCard}>
+                            <div style={styles.statValue}>{stats.totalSets}</div>
+                            <div style={styles.statLabel}>Total sets</div>
+                        </div>
+                        <div style={styles.statCard}>
+                            <div style={styles.statValue}>{stats.totalVolumeKg.toLocaleString()} kg</div>
+                            <div style={styles.statLabel}>Total volume lifted</div>
+                        </div>
+                    </div>
+                )}
 
                 {!loading && workouts.length === 0 && (
                     <p style={styles.empty}>No workouts logged yet. Start by logging your first one.</p>
@@ -66,6 +90,21 @@ const styles = {
         textDecoration: 'none',
         fontSize: '0.9rem',
     },
+    statsRow: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '1rem',
+        margin: '1.5rem 0',
+    },
+    statCard: {
+        background: '#fff',
+        border: '1px solid #e2e8f0',
+        borderRadius: '8px',
+        padding: '1rem',
+        textAlign: 'center',
+    },
+    statValue: { fontSize: '1.6rem', fontWeight: 'bold', color: '#2563eb' },
+    statLabel: { fontSize: '0.8rem', color: '#666', marginTop: '0.2rem' },
     empty: { color: '#666', marginTop: '2rem' },
     list: { marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' },
     card: {
