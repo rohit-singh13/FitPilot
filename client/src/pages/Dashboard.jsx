@@ -1,13 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/client';
+import aiApi from '../api/aiClient';
 import Navbar from '../components/Navbar';
+import { useAuth } from '../context/AuthContext';
 
 function Dashboard() {
+    const { user } = useAuth();
     const [workouts, setWorkouts] = useState([]);
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+
+    const [advice, setAdvice] = useState('');
+    const [coachError, setCoachError] = useState('');
+    const [coachLoading, setCoachLoading] = useState(false);
 
     useEffect(() => {
         Promise.all([
@@ -21,6 +28,37 @@ function Dashboard() {
             .catch(() => setError('Failed to load dashboard data'))
             .finally(() => setLoading(false));
     }, []);
+
+    const handleGetCoaching = async () => {
+        setCoachError('');
+        setAdvice('');
+        setCoachLoading(true);
+        try {
+            const recentWorkouts = workouts.slice(0, 5).map((w) => ({
+                name: w.name,
+                workoutDate: new Date(w.workoutDate).toISOString().split('T')[0],
+                sets: w.sets.map((s) => ({
+                    exerciseName: s.exercise?.name || 'Unknown',
+                    reps: s.reps,
+                    weightKg: s.weightKg,
+                })),
+            }));
+
+            const res = await aiApi.post('/coach/analyze', {
+                userName: user?.fullName || 'there',
+                fitnessGoal: user?.fitnessGoal || 'general_fitness',
+                recentWorkouts,
+            });
+
+            setAdvice(res.data.advice);
+        } catch (err) {
+            setCoachError(
+                err.response?.data?.detail || 'Failed to get coaching tips. Is the AI service running?'
+            );
+        } finally {
+            setCoachLoading(false);
+        }
+    };
 
     return (
         <div>
@@ -50,6 +88,25 @@ function Dashboard() {
                         </div>
                     </div>
                 )}
+
+                <div style={styles.coachBox}>
+                    <div style={styles.coachHeader}>
+                        <h3 style={{ margin: 0 }}>AI Coach</h3>
+                        <button
+                            onClick={handleGetCoaching}
+                            disabled={coachLoading || workouts.length === 0}
+                            style={styles.coachBtn}
+                        >
+                            {coachLoading ? 'Thinking...' : 'Get Coaching Tips'}
+                        </button>
+                    </div>
+
+                    {workouts.length === 0 && (
+                        <p style={styles.coachHint}>Log a workout first to get personalized tips.</p>
+                    )}
+                    {coachError && <p style={{ color: 'red', fontSize: '0.9rem' }}>{coachError}</p>}
+                    {advice && <div style={styles.adviceText}>{advice}</div>}
+                </div>
 
                 {!loading && workouts.length === 0 && (
                     <p style={styles.empty}>No workouts logged yet. Start by logging your first one.</p>
@@ -105,6 +162,31 @@ const styles = {
     },
     statValue: { fontSize: '1.6rem', fontWeight: 'bold', color: '#2563eb' },
     statLabel: { fontSize: '0.8rem', color: '#666', marginTop: '0.2rem' },
+    coachBox: {
+        background: '#f0f9ff',
+        border: '1px solid #bae6fd',
+        borderRadius: '8px',
+        padding: '1.2rem',
+        marginBottom: '1.5rem',
+    },
+    coachHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+    coachBtn: {
+        background: '#0ea5e9',
+        color: '#fff',
+        border: 'none',
+        padding: '0.5rem 1rem',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        fontSize: '0.9rem',
+    },
+    coachHint: { color: '#666', fontSize: '0.85rem', marginTop: '0.5rem' },
+    adviceText: {
+        marginTop: '1rem',
+        whiteSpace: 'pre-wrap',
+        fontSize: '0.95rem',
+        lineHeight: '1.5',
+        color: '#0c4a6e',
+    },
     empty: { color: '#666', marginTop: '2rem' },
     list: { marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' },
     card: {
