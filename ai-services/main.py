@@ -66,7 +66,7 @@ Give them 3 short, specific, actionable coaching tips based on this data (e.g. p
 
     try:
         completion = client.chat.completions.create(
-            model="poolside/laguna-xs-2.1:free",
+            model="tencent/hy3:free",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=500,
         )

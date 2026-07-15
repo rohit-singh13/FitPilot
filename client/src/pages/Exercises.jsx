@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api/client';
 import Navbar from '../components/Navbar';
+import { colors, btnPrimary } from '../theme';
 
 function Exercises() {
     const [exercises, setExercises] = useState([]);
@@ -27,7 +28,6 @@ function Exercises() {
         loadExercises();
     }, []);
 
-    // Live-filtered suggestions based on what's typed so far
     const suggestions = name.trim().length > 0
         ? exercises.filter((ex) =>
             ex.name.toLowerCase().includes(name.trim().toLowerCase())
@@ -54,7 +54,6 @@ function Exercises() {
         }
     };
 
-    // Group exercises by category for a cleaner display
     const grouped = exercises.reduce((acc, ex) => {
         acc[ex.category] = acc[ex.category] || [];
         acc[ex.category].push(ex);
@@ -62,14 +61,14 @@ function Exercises() {
     }, {});
 
     return (
-        <div>
+        <div style={{ background: colors.bg, minHeight: '100vh' }}>
             <Navbar />
             <div style={styles.container}>
-                <h1>Exercise Library</h1>
+                <h1 style={styles.h1}>Exercise Library</h1>
 
                 <form onSubmit={handleSubmit} style={styles.form}>
-                    <h3 style={{ marginTop: 0 }}>Add New Exercise</h3>
-                    {formError && <p style={{ color: 'red', fontSize: '0.85rem' }}>{formError}</p>}
+                    <h3 style={styles.h3}>Add New Exercise</h3>
+                    {formError && <p style={{ color: '#fca5a5', fontSize: '0.85rem' }}>{formError}</p>}
                     {exactMatch && (
                         <p style={styles.warning}>
                             An exercise named "{name.trim()}" already exists.
@@ -131,16 +130,16 @@ function Exercises() {
                             <option value="kettlebell">Kettlebell</option>
                         </select>
                     </div>
-                    <button type="submit" disabled={submitting} style={styles.submitBtn}>
+                    <button type="submit" disabled={submitting} style={{ ...btnPrimary, border: 'none', cursor: 'pointer' }}>
                         {submitting ? 'Adding...' : '+ Add Exercise'}
                     </button>
                 </form>
 
-                {loading && <p>Loading...</p>}
-                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {loading && <p style={{ color: colors.textMuted }}>Loading...</p>}
+                {error && <p style={{ color: '#fca5a5' }}>{error}</p>}
 
                 {!loading && Object.keys(grouped).length === 0 && (
-                    <p style={styles.empty}>No exercises yet. Add one above.</p>
+                    <p style={{ color: colors.textMuted }}>No exercises yet. Add one above.</p>
                 )}
 
                 {Object.entries(grouped).map(([cat, list]) => (
@@ -149,7 +148,7 @@ function Exercises() {
                         <div style={styles.grid}>
                             {list.map((ex) => (
                                 <div key={ex._id} style={styles.card}>
-                                    <strong>{ex.name}</strong>
+                                    <strong style={{ color: colors.text }}>{ex.name}</strong>
                                     <div style={styles.meta}>{ex.muscleGroup} · {ex.equipment}</div>
                                 </div>
                             ))}
@@ -163,35 +162,30 @@ function Exercises() {
 
 const styles = {
     container: { maxWidth: '700px', margin: '0 auto', padding: '2rem' },
+    h1: { color: colors.text, fontSize: '1.8rem', fontWeight: 600, marginBottom: '1.5rem' },
+    h3: { color: colors.text, fontSize: '1.05rem', fontWeight: 600, marginTop: 0 },
     form: {
-        background: '#fff',
-        border: '1px solid #e2e8f0',
+        background: colors.surface,
+        border: `1px solid ${colors.border}`,
         borderRadius: '8px',
         padding: '1.2rem',
         marginBottom: '2rem',
     },
     formRow: { display: 'flex', gap: '0.6rem', marginBottom: '0.6rem' },
     input: {
-        width: '100%',
         flex: 1,
         padding: '0.5rem',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
-        boxSizing: 'border-box',
-    },
-    submitBtn: {
-        background: '#2563eb',
-        color: '#fff',
-        border: 'none',
-        padding: '0.5rem 1rem',
-        borderRadius: '4px',
-        cursor: 'pointer',
+        borderRadius: '6px',
+        border: `1px solid ${colors.border}`,
+        background: '#0d1117',
+        color: colors.text,
+        fontFamily: 'inherit',
     },
     warning: {
-        background: '#fef3c7',
-        color: '#92400e',
+        background: 'rgba(245, 158, 11, 0.15)',
+        color: '#fbbf24',
         padding: '0.5rem 0.7rem',
-        borderRadius: '4px',
+        borderRadius: '6px',
         fontSize: '0.85rem',
         marginBottom: '0.6rem',
     },
@@ -200,12 +194,12 @@ const styles = {
         top: '100%',
         left: 0,
         right: 0,
-        background: '#fff',
-        border: '1px solid #ccc',
-        borderRadius: '4px',
+        background: colors.surface,
+        border: `1px solid ${colors.border}`,
+        borderRadius: '6px',
         marginTop: '2px',
         zIndex: 10,
-        boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+        boxShadow: '0 4px 10px rgba(0,0,0,0.4)',
         maxHeight: '220px',
         overflowY: 'auto',
     },
@@ -213,23 +207,23 @@ const styles = {
         padding: '0.5rem 0.7rem',
         cursor: 'pointer',
         fontSize: '0.9rem',
-        borderBottom: '1px solid #f1f1f1',
+        color: colors.text,
+        borderBottom: `1px solid ${colors.border}`,
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-    suggestionMeta: { fontSize: '0.75rem', color: '#888', textTransform: 'capitalize' },
-    empty: { color: '#666' },
+    suggestionMeta: { fontSize: '0.75rem', color: colors.textFaint, textTransform: 'capitalize' },
     group: { marginBottom: '1.5rem' },
-    groupTitle: { textTransform: 'capitalize', color: '#334155', marginBottom: '0.5rem' },
+    groupTitle: { textTransform: 'capitalize', color: colors.textMuted, marginBottom: '0.5rem', fontSize: '0.95rem' },
     grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.6rem' },
     card: {
-        border: '1px solid #e2e8f0',
+        border: `1px solid ${colors.border}`,
         borderRadius: '6px',
         padding: '0.7rem',
-        background: '#fff',
+        background: colors.surface,
     },
-    meta: { fontSize: '0.8rem', color: '#888', textTransform: 'capitalize', marginTop: '0.2rem' },
+    meta: { fontSize: '0.8rem', color: colors.textFaint, textTransform: 'capitalize', marginTop: '0.2rem' },
 };
 
 export default Exercises;

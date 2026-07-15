@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/client';
 import Navbar from '../components/Navbar';
+import { colors, btnPrimary } from '../theme';
 
 function LogWorkout() {
     const [name, setName] = useState('');
@@ -44,7 +45,7 @@ function LogWorkout() {
             }));
 
             await api.post('/workouts', { name, notes, sets: formattedSets });
-            navigate('/');
+            navigate('/dashboard');
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to save workout');
         } finally {
@@ -53,10 +54,10 @@ function LogWorkout() {
     };
 
     return (
-        <div>
+        <div style={{ background: colors.bg, minHeight: '100vh' }}>
             <Navbar />
             <div style={styles.container}>
-                <h1>Log a Workout</h1>
+                <h1 style={styles.h1}>Log a Workout</h1>
                 <form onSubmit={handleSubmit}>
                     <label style={styles.label}>Workout Name</label>
                     <input
@@ -71,10 +72,10 @@ function LogWorkout() {
                     <textarea
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
-                        style={{ ...styles.input, minHeight: '60px' }}
+                        style={{ ...styles.input, minHeight: '60px', resize: 'vertical' }}
                     />
 
-                    <h3 style={{ marginTop: '1.5rem' }}>Sets</h3>
+                    <h3 style={styles.h3}>Sets</h3>
                     {sets.map((s, i) => (
                         <div key={i} style={styles.setRow}>
                             <select
@@ -111,9 +112,9 @@ function LogWorkout() {
 
                     <button type="button" onClick={addSetRow} style={styles.addBtn}>+ Add Set</button>
 
-                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                    {error && <p style={{ color: '#fca5a5' }}>{error}</p>}
 
-                    <button type="submit" disabled={submitting} style={styles.submitBtn}>
+                    <button type="submit" disabled={submitting} style={{ ...btnPrimary, width: '100%', border: 'none', cursor: 'pointer', fontSize: '1rem' }}>
                         {submitting ? 'Saving...' : 'Save Workout'}
                     </button>
                 </form>
@@ -124,25 +125,30 @@ function LogWorkout() {
 
 const styles = {
     container: { maxWidth: '600px', margin: '0 auto', padding: '2rem' },
-    label: { display: 'block', marginTop: '1rem', marginBottom: '0.3rem', fontSize: '0.9rem' },
+    h1: { color: colors.text, fontSize: '1.8rem', fontWeight: 600, marginBottom: '1.5rem' },
+    h3: { color: colors.text, fontSize: '1.1rem', fontWeight: 600, marginTop: '1.5rem', marginBottom: '0.8rem' },
+    label: { display: 'block', color: colors.textMuted, marginTop: '1rem', marginBottom: '0.3rem', fontSize: '0.85rem' },
     input: {
-        width: '100%', padding: '0.6rem', borderRadius: '4px',
-        border: '1px solid #ccc', boxSizing: 'border-box',
+        width: '100%', padding: '0.6rem', borderRadius: '6px',
+        border: `1px solid ${colors.border}`, background: colors.surface, color: colors.text,
+        boxSizing: 'border-box', fontFamily: 'inherit',
     },
     setRow: { display: 'flex', gap: '0.5rem', marginBottom: '0.6rem', alignItems: 'center' },
-    select: { flex: 2, padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' },
-    smallInput: { flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' },
+    select: {
+        flex: 2, padding: '0.5rem', borderRadius: '6px',
+        border: `1px solid ${colors.border}`, background: colors.surface, color: colors.text, fontFamily: 'inherit',
+    },
+    smallInput: {
+        flex: 1, padding: '0.5rem', borderRadius: '6px',
+        border: `1px solid ${colors.border}`, background: colors.surface, color: colors.text, fontFamily: 'inherit',
+    },
     removeBtn: {
-        background: '#ef4444', color: '#fff', border: 'none',
-        borderRadius: '4px', width: '28px', height: '32px', cursor: 'pointer',
+        background: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5', border: '1px solid rgba(239, 68, 68, 0.4)',
+        borderRadius: '6px', width: '32px', height: '36px', cursor: 'pointer', fontSize: '1rem',
     },
     addBtn: {
-        background: '#e2e8f0', border: 'none', padding: '0.5rem 1rem',
-        borderRadius: '4px', cursor: 'pointer', marginBottom: '1rem',
-    },
-    submitBtn: {
-        display: 'block', width: '100%', padding: '0.7rem', background: '#2563eb',
-        color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '1rem',
+        background: colors.surface, color: colors.textMuted, border: `1px solid ${colors.border}`,
+        padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer', marginBottom: '1rem', fontSize: '0.9rem',
     },
 };
 

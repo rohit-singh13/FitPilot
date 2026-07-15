@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { colors, btnPrimary } from '../theme';
 
 function Register() {
     const [fullName, setFullName] = useState('');
@@ -27,9 +28,9 @@ function Register() {
     };
 
     return (
-        <div style={styles.container}>
+        <div style={styles.page}>
             <form onSubmit={handleSubmit} style={styles.form}>
-                <h1 style={styles.title}>FitPilot</h1>
+                <Link to="/" style={styles.brand}>⚡ FitPilot</Link>
                 <p style={styles.subtitle}>Create your account</p>
 
                 {error && <div style={styles.error}>{error}</div>}
@@ -62,12 +63,12 @@ function Register() {
                     style={styles.input}
                 />
 
-                <button type="submit" disabled={submitting} style={styles.button}>
+                <button type="submit" disabled={submitting} style={{ ...btnPrimary, width: '100%', border: 'none', cursor: 'pointer', marginTop: '1.5rem' }}>
                     {submitting ? 'Creating account...' : 'Register'}
                 </button>
 
                 <p style={styles.footerText}>
-                    Already have an account? <Link to="/login">Log in</Link>
+                    Already have an account? <Link to="/login" style={{ color: colors.accent }}>Log in</Link>
                 </p>
             </form>
         </div>
@@ -75,50 +76,27 @@ function Register() {
 }
 
 const styles = {
-    container: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        background: '#f4f4f4',
+    page: {
+        display: 'flex', justifyContent: 'center', alignItems: 'center',
+        minHeight: '100vh', background: colors.bg,
     },
     form: {
-        background: '#fff',
-        padding: '2.5rem',
-        borderRadius: '8px',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-        width: '320px',
+        background: colors.surface, padding: '2.5rem', borderRadius: '10px',
+        width: '340px', border: `1px solid ${colors.border}`,
     },
-    title: { margin: 0, fontSize: '1.8rem' },
-    subtitle: { color: '#666', marginBottom: '1.5rem' },
-    label: { display: 'block', marginTop: '1rem', marginBottom: '0.3rem', fontSize: '0.9rem' },
+    brand: { color: colors.text, fontWeight: 600, fontSize: '1.3rem', textDecoration: 'none' },
+    subtitle: { color: colors.textMuted, marginBottom: '1.5rem', fontSize: '0.9rem' },
+    label: { display: 'block', color: colors.textMuted, marginTop: '1rem', marginBottom: '0.3rem', fontSize: '0.85rem' },
     input: {
-        width: '100%',
-        padding: '0.6rem',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
-        boxSizing: 'border-box',
-    },
-    button: {
-        width: '100%',
-        marginTop: '1.5rem',
-        padding: '0.7rem',
-        background: '#2563eb',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '4px',
-        cursor: 'pointer',
-        fontSize: '1rem',
+        width: '100%', padding: '0.6rem', borderRadius: '6px',
+        border: `1px solid ${colors.border}`, background: '#0d1117', color: colors.text,
+        boxSizing: 'border-box', fontFamily: 'inherit',
     },
     error: {
-        background: '#fee2e2',
-        color: '#b91c1c',
-        padding: '0.6rem',
-        borderRadius: '4px',
-        fontSize: '0.85rem',
-        marginBottom: '0.5rem',
+        background: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5', padding: '0.6rem',
+        borderRadius: '6px', fontSize: '0.85rem', marginBottom: '0.5rem',
     },
-    footerText: { marginTop: '1.2rem', fontSize: '0.85rem', textAlign: 'center' },
+    footerText: { marginTop: '1.2rem', fontSize: '0.85rem', textAlign: 'center', color: colors.textMuted },
 };
 
 export default Register;

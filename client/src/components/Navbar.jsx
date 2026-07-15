@@ -1,16 +1,19 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { colors } from '../theme';
 
 function Navbar() {
     const { user, logout } = useAuth();
 
     return (
         <nav style={styles.nav}>
-            <Link to="/dashboard" style={styles.brand}>FitPilot</Link>
+            <Link to="/dashboard" style={styles.brand}> FitPilot</Link>
             <div style={styles.links}>
                 <Link to="/dashboard" style={styles.link}>Dashboard</Link>
                 <Link to="/workouts/new" style={styles.link}>Log Workout</Link>
                 <Link to="/exercises" style={styles.link}>Exercises</Link>
+            </div>
+            <div style={styles.right}>
                 <span style={styles.userName}>{user?.fullName}</span>
                 <button onClick={logout} style={styles.logoutBtn}>Logout</button>
             </div>
@@ -24,21 +27,22 @@ const styles = {
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: '1rem 2rem',
-        background: '#1e293b',
-        color: '#fff',
+        background: colors.surface,
+        borderBottom: `1px solid ${colors.border}`,
     },
-    brand: { color: '#fff', fontWeight: 'bold', fontSize: '1.2rem', textDecoration: 'none' },
-    links: { display: 'flex', alignItems: 'center', gap: '1.2rem' },
-    link: { color: '#cbd5e1', textDecoration: 'none', fontSize: '0.95rem' },
-    userName: { color: '#94a3b8', fontSize: '0.85rem' },
+    brand: { color: colors.text, fontWeight: 600, fontSize: '2rem', textDecoration: 'none' },
+    links: { display: 'flex', alignItems: 'center', gap: '2rem' },
+    link: { color: '#ffffff', textDecoration: 'none', fontSize: '1rem' },
+    right: { display: 'flex', alignItems: 'center', gap: '1.5rem' },
+    userName: { color: '#a3e635', fontSize: '1rem' },
     logoutBtn: {
-        background: '#ef4444',
-        color: '#fff',
-        border: 'none',
-        padding: '0.4rem 0.8rem',
-        borderRadius: '4px',
+        background: 'transparent',
+        color: '#fca5a5',
+        border: '1px solid rgba(239, 68, 68, 0.4)',
+        padding: '0.4rem 0.9rem',
+        borderRadius: '6px',
         cursor: 'pointer',
-        fontSize: '0.85rem',
+        fontSize: '1rem',
     },
 };
 
