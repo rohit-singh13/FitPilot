@@ -1,4 +1,5 @@
 import os
+import re
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,8 +19,8 @@ app.add_middleware(
 )
 
 client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY"),
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+    api_key=os.getenv("GOOGLE_API_KEY"),
 )
 
 
@@ -45,6 +46,41 @@ class CoachingRequest(BaseModel):
     fitnessGoal: str
     recentWorkouts: list[WorkoutInput]
 
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: list[ChatMessage]
+
+
+SYSTEM_PROMPT = """You are FitPilot's AI assistant — a knowledgeable, friendly fitness and nutrition coach.
+You help users with questions about exercises, workout form, nutrition, supplements, recovery, and general fitness advice.
+Keep answers concise, practical, and encouraging. If a question is completely unrelated to fitness, nutrition, or health,
+politely redirect the user back to fitness-related topics."""
+
+
+@app.post("/chat")
+def chat(payload: ChatRequest):
+    if not payload.messages:
+        raise HTTPException(status_code=400, detail="No messages provided")
+
+    api_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    for m in payload.messages:
+        api_messages.append({"role": m.role, "content": m.content})
+
+    try:
+        completion = client.chat.completions.create(
+            model="gemma-4-31b-it",
+            messages=api_messages,
+            max_tokens=1000,
+        )
+        raw_reply = completion.choices[0].message.content
+        cleaned_reply = re.sub(r'<thought>.*?</thought>', '', raw_reply, flags=re.DOTALL).strip()
+        return {"reply": cleaned_reply}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/coach/analyze")
 def analyze_workouts(payload: CoachingRequest):
@@ -66,10 +102,12 @@ Give them 3 short, specific, actionable coaching tips based on this data (e.g. p
 
     try:
         completion = client.chat.completions.create(
-            model="tencent/hy3:free",
+            model="gemma-4-31b-it",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=500,
+            max_tokens=1000,
         )
-        return {"advice": completion.choices[0].message.content}
+        raw_advice = completion.choices[0].message.content
+        cleaned_advice = re.sub(r'<thought>.*?</thought>', '', raw_advice, flags=re.DOTALL).strip()
+        return {"advice": cleaned_advice}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

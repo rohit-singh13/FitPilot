@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import LogWorkout from './pages/LogWorkout';
 import Exercises from './pages/Exercises';
+import ChatWidget from './components/ChatWidget';
 
 function App() {
     const { user, loading } = useAuth();
@@ -19,6 +20,7 @@ function App() {
     }
 
     return (
+        <>
         <Routes>
             {/* accessible to everyone */}
             <Route path="/" element={<Home />} />
@@ -36,6 +38,8 @@ function App() {
             <Route path="/workouts/new" element={user ? <LogWorkout /> : <Navigate to="/login" />} />
             <Route path="/exercises" element={user ? <Exercises /> : <Navigate to="/login" />} />
         </Routes>
+        {user && <ChatWidget />}
+        </>
     );
 }
 

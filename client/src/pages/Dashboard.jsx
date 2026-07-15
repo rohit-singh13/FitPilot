@@ -5,6 +5,7 @@ import aiApi from '../api/aiClient';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../context/AuthContext';
 import { colors, btnPrimary } from '../theme';
+import ReactMarkdown from 'react-markdown';
 
 function Dashboard() {
     const { user } = useAuth();
@@ -106,7 +107,11 @@ function Dashboard() {
                         <p style={styles.coachHint}>Log a workout first to get personalized tips.</p>
                     )}
                     {coachError && <p style={{ color: '#fca5a5', fontSize: '0.9rem' }}>{coachError}</p>}
-                    {advice && <div style={styles.adviceText}>{advice}</div>}
+                    {advice && (
+                        <div style={styles.adviceText}>
+                            <ReactMarkdown>{advice}</ReactMarkdown>
+                        </div>
+                    )}
                 </div>
 
                 {!loading && workouts.length === 0 && (
@@ -171,7 +176,7 @@ const styles = {
         whiteSpace: 'pre-wrap',
         fontSize: '0.95rem',
         lineHeight: '1.5',
-        color: colors.textMuted,
+        color: '#ffffff',
     },
     empty: { color: colors.textMuted, marginTop: '2rem' },
     list: { marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' },
