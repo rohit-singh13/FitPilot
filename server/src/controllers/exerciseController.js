@@ -20,7 +20,9 @@ const createExercise = async (req, res, next) => {
             throw new Error('Name, Category and Musclegroup are required');
         }
 
-        const existing = await Exercise.findOne({ name });
+        const existing = await Exercise.findOne({
+            name: { $regex: `^${name.trim()}$`, $options: 'i' }
+        });
         if(existing) {
             res.status(400);
             throw new Error('An exercise with this name already exists');

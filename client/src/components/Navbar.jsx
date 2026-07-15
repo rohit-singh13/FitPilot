@@ -6,9 +6,9 @@ function Navbar() {
 
     return (
         <nav style={styles.nav}>
-            <Link to="/" style={styles.brand}>FitPilot</Link>
+            <Link to="/dashboard" style={styles.brand}>FitPilot</Link>
             <div style={styles.links}>
-                <Link to="/" style={styles.link}>Dashboard</Link>
+                <Link to="/dashboard" style={styles.link}>Dashboard</Link>
                 <Link to="/workouts/new" style={styles.link}>Log Workout</Link>
                 <Link to="/exercises" style={styles.link}>Exercises</Link>
                 <span style={styles.userName}>{user?.fullName}</span>
@@ -25,12 +25,12 @@ const styles = {
         alignItems: 'center',
         padding: '1rem 2rem',
         background: '#1e293b',
-        color: '#fff'
+        color: '#fff',
     },
-    brand: { color: '#fff', fontWeight: 'bold', fontSize: '1.2rem', textDecoration: 'none'},
-    links: { display: 'flex', alignItems: 'center', gap: '1.2rem'},
-    link: { color: '#cbd5e1', textDecoration: 'none', fontSize: '0.95rem'},
-    userName: { color: '#94a3b8', fontSize: '0.85rem'},
+    brand: { color: '#fff', fontWeight: 'bold', fontSize: '1.2rem', textDecoration: 'none' },
+    links: { display: 'flex', alignItems: 'center', gap: '1.2rem' },
+    link: { color: '#cbd5e1', textDecoration: 'none', fontSize: '0.95rem' },
+    userName: { color: '#94a3b8', fontSize: '0.85rem' },
     logoutBtn: {
         background: '#ef4444',
         color: '#fff',
@@ -38,7 +38,7 @@ const styles = {
         padding: '0.4rem 0.8rem',
         borderRadius: '4px',
         cursor: 'pointer',
-        fontSize: '0.85rem'
+        fontSize: '0.85rem',
     },
 };
 

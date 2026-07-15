@@ -13,6 +13,7 @@ function Exercises() {
     const [equipment, setEquipment] = useState('bodyweight');
     const [submitting, setSubmitting] = useState(false);
     const [formError, setFormError] = useState('');
+    const [showSuggestions, setShowSuggestions] = useState(false);
 
     const loadExercises = () => {
         setLoading(true);
@@ -25,6 +26,17 @@ function Exercises() {
     useEffect(() => {
         loadExercises();
     }, []);
+
+    // Live-filtered suggestions based on what's typed so far
+    const suggestions = name.trim().length > 0
+        ? exercises.filter((ex) =>
+            ex.name.toLowerCase().includes(name.trim().toLowerCase())
+          )
+        : [];
+
+    const exactMatch = exercises.some(
+        (ex) => ex.name.trim().toLowerCase() === name.trim().toLowerCase()
+    );
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -58,14 +70,41 @@ function Exercises() {
                 <form onSubmit={handleSubmit} style={styles.form}>
                     <h3 style={{ marginTop: 0 }}>Add New Exercise</h3>
                     {formError && <p style={{ color: 'red', fontSize: '0.85rem' }}>{formError}</p>}
+                    {exactMatch && (
+                        <p style={styles.warning}>
+                            An exercise named "{name.trim()}" already exists.
+                        </p>
+                    )}
+
                     <div style={styles.formRow}>
-                        <input
-                            placeholder="Exercise name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                            style={styles.input}
-                        />
+                        <div style={{ position: 'relative', flex: 1 }}>
+                            <input
+                                placeholder="Exercise name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                onFocus={() => setShowSuggestions(true)}
+                                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                                required
+                                style={styles.input}
+                                autoComplete="off"
+                            />
+                            {showSuggestions && suggestions.length > 0 && (
+                                <div style={styles.suggestionBox}>
+                                    {suggestions.slice(0, 6).map((ex) => (
+                                        <div
+                                            key={ex._id}
+                                            style={styles.suggestionItem}
+                                            onMouseDown={() => setName(ex.name)}
+                                        >
+                                            {ex.name}
+                                            <span style={styles.suggestionMeta}>
+                                                {ex.category} · {ex.muscleGroup}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                         <select value={category} onChange={(e) => setCategory(e.target.value)} style={styles.input}>
                             <option value="push">Push</option>
                             <option value="pull">Pull</option>
@@ -133,10 +172,12 @@ const styles = {
     },
     formRow: { display: 'flex', gap: '0.6rem', marginBottom: '0.6rem' },
     input: {
+        width: '100%',
         flex: 1,
         padding: '0.5rem',
         borderRadius: '4px',
         border: '1px solid #ccc',
+        boxSizing: 'border-box',
     },
     submitBtn: {
         background: '#2563eb',
@@ -146,6 +187,38 @@ const styles = {
         borderRadius: '4px',
         cursor: 'pointer',
     },
+    warning: {
+        background: '#fef3c7',
+        color: '#92400e',
+        padding: '0.5rem 0.7rem',
+        borderRadius: '4px',
+        fontSize: '0.85rem',
+        marginBottom: '0.6rem',
+    },
+    suggestionBox: {
+        position: 'absolute',
+        top: '100%',
+        left: 0,
+        right: 0,
+        background: '#fff',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        marginTop: '2px',
+        zIndex: 10,
+        boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+        maxHeight: '220px',
+        overflowY: 'auto',
+    },
+    suggestionItem: {
+        padding: '0.5rem 0.7rem',
+        cursor: 'pointer',
+        fontSize: '0.9rem',
+        borderBottom: '1px solid #f1f1f1',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    suggestionMeta: { fontSize: '0.75rem', color: '#888', textTransform: 'capitalize' },
     empty: { color: '#666' },
     group: { marginBottom: '1.5rem' },
     groupTitle: { textTransform: 'capitalize', color: '#334155', marginBottom: '0.5rem' },
