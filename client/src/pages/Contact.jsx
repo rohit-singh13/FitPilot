@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { colors, btnPrimary } from '../theme';
+import Navbar from '../components/Navbar';
 
 function Contact() {
     const [submitted, setSubmitted] = useState(false);
@@ -12,17 +13,7 @@ function Contact() {
 
     return (
         <div style={{ background: colors.bg, minHeight: '100vh', color: colors.text, fontFamily: 'system-ui, sans-serif' }}>
-            <nav style={styles.nav}>
-                <Link to="/" style={styles.brand}>⚡ FitPilot</Link>
-                <div style={styles.navLinks}>
-                    <Link to="/" style={styles.navLink}>Home</Link>
-                    <Link to="/about" style={styles.navLink}>About</Link>
-                    <Link to="/plans" style={styles.navLink}>Plans</Link>
-                    <Link to="/shop" style={styles.navLink}>Shop</Link>
-                    <Link to="/contact" style={{ color: colors.text, textDecoration: 'none', fontSize: '0.9rem' }}>Contact</Link>
-                </div>
-                <Link to="/register" style={btnPrimary}>Sign up</Link>
-            </nav>
+            <Navbar />
 
             <div style={styles.container}>
                 <h1 style={styles.h1}>Get in touch</h1>
@@ -44,13 +35,6 @@ function Contact() {
 }
 
 const styles = {
-    nav: {
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '1.2rem 3rem', borderBottom: `1px solid ${colors.border}`,
-    },
-    brand: { color: colors.text, fontWeight: 600, fontSize: '1.1rem', textDecoration: 'none' },
-    navLinks: { display: 'flex', gap: '1.5rem' },
-    navLink: { color: colors.textMuted, textDecoration: 'none', fontSize: '0.9rem' },
     container: { maxWidth: '500px', margin: '0 auto', padding: '3.5rem 2rem' },
     h1: { fontSize: '2rem', fontWeight: 600, marginBottom: '0.6rem' },
     p: { color: colors.textMuted, marginBottom: '2rem' },

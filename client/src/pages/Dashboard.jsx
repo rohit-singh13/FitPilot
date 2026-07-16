@@ -10,7 +10,6 @@ import ReactMarkdown from 'react-markdown';
 function Dashboard() {
     const { user } = useAuth();
     const [workouts, setWorkouts] = useState([]);
-    const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -19,17 +18,25 @@ function Dashboard() {
     const [coachLoading, setCoachLoading] = useState(false);
 
     useEffect(() => {
-        Promise.all([
-            api.get('/workouts'),
-            api.get('/stats/summary'),
-        ])
-            .then(([workoutsRes, statsRes]) => {
-                setWorkouts(workoutsRes.data);
-                setStats(statsRes.data);
-            })
+        api.get('/workouts')
+            .then((res) => setWorkouts(res.data))
             .catch(() => setError('Failed to load dashboard data'))
             .finally(() => setLoading(false));
     }, []);
+
+    const isToday = (dateStr) =>
+        new Date(dateStr).toDateString() === new Date().toDateString();
+
+    const todayWorkouts = workouts.filter((w) => isToday(w.workoutDate));
+
+    const todayStats = todayWorkouts.reduce(
+        (acc, w) => {
+            acc.totalSets += w.sets.length;
+            acc.totalVolumeKg += w.sets.reduce((sum, s) => sum + s.reps * s.weightKg, 0);
+            return acc;
+        },
+        { totalSets: 0, totalVolumeKg: 0 }
+    );
 
     const handleGetCoaching = async () => {
         setCoachError('');
@@ -67,26 +74,29 @@ function Dashboard() {
             <Navbar />
             <div style={styles.container}>
                 <div style={styles.header}>
-                    <h1 style={styles.h1}>Your Workouts</h1>
-                    <Link to="/workouts/new" style={btnPrimary}>+ Log Workout</Link>
+                    <h1 style={styles.h1}>Today's Workouts</h1>
+                    <div style={{ display: 'flex', gap: '0.75rem' }}>
+                        <Link to="/workouts/history" style={styles.secondaryBtn}>View History</Link>
+                        <Link to="/workouts/new" style={btnPrimary}>+ Log Workout</Link>
+                    </div>
                 </div>
 
                 {loading && <p style={{ color: colors.textMuted }}>Loading...</p>}
                 {error && <p style={{ color: '#fca5a5' }}>{error}</p>}
 
-                {stats && (
+                {!loading && !error && (
                     <div style={styles.statsRow}>
                         <div style={styles.statCard}>
-                            <div style={styles.statValue}>{stats.totalWorkouts}</div>
-                            <div style={styles.statLabel}>Workouts logged</div>
+                            <div style={styles.statValue}>{todayWorkouts.length}</div>
+                            <div style={styles.statLabel}>Workouts today</div>
                         </div>
                         <div style={styles.statCard}>
-                            <div style={styles.statValue}>{stats.totalSets}</div>
-                            <div style={styles.statLabel}>Total sets</div>
+                            <div style={styles.statValue}>{todayStats.totalSets}</div>
+                            <div style={styles.statLabel}>Sets today</div>
                         </div>
                         <div style={styles.statCard}>
-                            <div style={styles.statValue}>{stats.totalVolumeKg.toLocaleString()} kg</div>
-                            <div style={styles.statLabel}>Total volume lifted</div>
+                            <div style={styles.statValue}>{todayStats.totalVolumeKg.toLocaleString()} kg</div>
+                            <div style={styles.statLabel}>Volume today</div>
                         </div>
                     </div>
                 )}
@@ -114,12 +124,15 @@ function Dashboard() {
                     )}
                 </div>
 
-                {!loading && workouts.length === 0 && (
-                    <p style={styles.empty}>No workouts logged yet. Start by logging your first one.</p>
+                {!loading && todayWorkouts.length === 0 && (
+                    <div style={styles.empty}>
+                        <p style={{ margin: 0, marginBottom: '1rem' }}>No workouts logged today.</p>
+                        <Link to="/workouts/new" style={btnPrimary}>+ Log Workout</Link>
+                    </div>
                 )}
 
                 <div style={styles.list}>
-                    {workouts.map((w) => (
+                    {todayWorkouts.map((w) => (
                         <div key={w._id} style={styles.card}>
                             <div style={styles.cardHeader}>
                                 <h3 style={styles.cardTitle}>{w.name}</h3>
@@ -146,6 +159,16 @@ const styles = {
     container: { maxWidth: '700px', margin: '0 auto', padding: '2rem' },
     header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
     h1: { color: colors.text, fontSize: '1.8rem', fontWeight: 600, margin: 0 },
+    secondaryBtn: {
+        color: colors.text,
+        textDecoration: 'none',
+        border: `1px solid ${colors.border}`,
+        borderRadius: '6px',
+        padding: '0.5rem 1rem',
+        fontSize: '0.95rem',
+        display: 'flex',
+        alignItems: 'center',
+    },
     statsRow: {
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
@@ -178,7 +201,15 @@ const styles = {
         lineHeight: '1.5',
         color: '#ffffff',
     },
-    empty: { color: colors.textMuted, marginTop: '2rem' },
+    empty: {
+        color: colors.textMuted,
+        marginTop: '1rem',
+        marginBottom: '1.5rem',
+        textAlign: 'center',
+        border: `1px dashed ${colors.border}`,
+        borderRadius: '8px',
+        padding: '2rem 1rem',
+    },
     list: { marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' },
     card: {
         border: `1px solid ${colors.border}`,

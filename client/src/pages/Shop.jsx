@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { colors, btnPrimary } from '../theme';
+import Navbar from '../components/Navbar';
 
 const accessories = [
     { name: 'Lifting Straps', desc: 'Cotton wrist straps for heavy pulls', link: 'https://www.amazon.in/s?k=lifting+straps' },
@@ -32,17 +33,7 @@ function ProductGrid({ items }) {
 function Shop() {
     return (
         <div style={{ background: colors.bg, minHeight: '100vh', color: colors.text, fontFamily: 'system-ui, sans-serif' }}>
-            <nav style={styles.nav}>
-                <Link to="/" style={styles.brand}>⚡ FitPilot</Link>
-                <div style={styles.navLinks}>
-                    <Link to="/" style={styles.navLink}>Home</Link>
-                    <Link to="/about" style={styles.navLink}>About</Link>
-                    <Link to="/plans" style={styles.navLink}>Plans</Link>
-                    <Link to="/shop" style={{ color: colors.text, textDecoration: 'none', fontSize: '0.9rem' }}>Shop</Link>
-                    <Link to="/contact" style={styles.navLink}>Contact</Link>
-                </div>
-                <Link to="/register" style={btnPrimary}>Sign up</Link>
-            </nav>
+            <Navbar />
 
             <div style={styles.container}>
                 <h1 style={styles.h1}>Gear & Supplements</h1>
@@ -63,13 +54,6 @@ function Shop() {
 }
 
 const styles = {
-    nav: {
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '1.2rem 3rem', borderBottom: `1px solid ${colors.border}`,
-    },
-    brand: { color: colors.text, fontWeight: 600, fontSize: '1.1rem', textDecoration: 'none' },
-    navLinks: { display: 'flex', gap: '1.5rem' },
-    navLink: { color: colors.textMuted, textDecoration: 'none', fontSize: '0.9rem' },
     container: { maxWidth: '900px', margin: '0 auto', padding: '3.5rem 2rem' },
     h1: { fontSize: '2rem', fontWeight: 600, marginBottom: '0.6rem' },
     h2: { fontSize: '1.1rem', fontWeight: 600, margin: '2rem 0 1rem' },

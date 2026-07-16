@@ -1,21 +1,38 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { colors } from '../theme';
+import { colors, btnPrimary } from '../theme';
 
 function Navbar() {
     const { user, logout } = useAuth();
 
     return (
         <nav style={styles.nav}>
-            <Link to="/dashboard" style={styles.brand}> FitPilot</Link>
+            <Link to={user ? '/dashboard' : '/'} style={styles.brand}>⚡ FitPilot</Link>
+
             <div style={styles.links}>
-                <Link to="/dashboard" style={styles.link}>Dashboard</Link>
-                <Link to="/workouts/new" style={styles.link}>Log Workout</Link>
-                <Link to="/exercises" style={styles.link}>Exercises</Link>
+                {user && (
+                    <>
+                        <Link to="/dashboard" style={styles.link}>Dashboard</Link>
+                        <Link to="/workouts/new" style={styles.link}>Log Workout</Link>
+                        <Link to="/exercises" style={styles.link}>Exercises</Link>
+                    </>
+                )}
+                {!user && <Link to="/" style={styles.link}>Home</Link>}
+                <Link to="/about" style={styles.link}>About</Link>
+                <Link to="/plans" style={styles.link}>Plans</Link>
+                <Link to="/shop" style={styles.link}>Shop</Link>
+                <Link to="/contact" style={styles.link}>Contact</Link>
             </div>
+
             <div style={styles.right}>
-                <span style={styles.userName}>{user?.fullName}</span>
-                <button onClick={logout} style={styles.logoutBtn}>Logout</button>
+                {user ? (
+                    <>
+                        <span style={styles.userName}>{user?.fullName}</span>
+                        <button onClick={logout} style={styles.logoutBtn}>Logout</button>
+                    </>
+                ) : (
+                    <Link to="/register" style={btnPrimary}>Sign up</Link>
+                )}
             </div>
         </nav>
     );

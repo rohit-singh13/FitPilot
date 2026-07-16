@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import LogWorkout from './pages/LogWorkout';
 import Exercises from './pages/Exercises';
 import ChatWidget from './components/ChatWidget';
+import History from './pages/History';
 
 function App() {
     const { user, loading } = useAuth();
@@ -37,6 +38,7 @@ function App() {
             <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
             <Route path="/workouts/new" element={user ? <LogWorkout /> : <Navigate to="/login" />} />
             <Route path="/exercises" element={user ? <Exercises /> : <Navigate to="/login" />} />
+            <Route path="/workouts/history" element={user ? <History /> : <Navigate to="/login" />}></Route>
         </Routes>
         {user && <ChatWidget />}
         </>
