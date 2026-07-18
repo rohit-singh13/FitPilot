@@ -2,10 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../api/client';
 import Navbar from '../components/Navbar';
 import { colors } from '../theme';
-import {
-    RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
-    ResponsiveContainer,
-} from 'recharts';
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 
 function History() {
     const [workouts, setWorkouts] = useState([]);
