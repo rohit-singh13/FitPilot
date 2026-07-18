@@ -12,7 +12,7 @@ app = FastAPI(title="FitPilot AI Service")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5000"],
+    allow_origins=["http://localhost:5173", "http://localhost:5000", "https://fit-pilot-three.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
