@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/client';
 import Navbar from '../components/Navbar';
 import { colors, btnPrimary } from '../theme';
+import ExercisePicker from '../components/ExercisePicker';
 
 function LogWorkout() {
     const [name, setName] = useState('');
@@ -35,6 +36,10 @@ function LogWorkout() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        if (setError.some((s) => !s.exercise)) {
+            setError('Please select an exercise for every set');
+            return;
+        }
         setSubmitting(true);
         try {
             const formattedSets = sets.map((s, i) => ({
@@ -78,17 +83,11 @@ function LogWorkout() {
                     <h3 style={styles.h3}>Sets</h3>
                     {sets.map((s, i) => (
                         <div key={i} style={styles.setRow}>
-                            <select
+                            <ExercisePicker
+                                exercises={exercises}
                                 value={s.exercise}
-                                onChange={(e) => updateSet(i, 'exercise', e.target.value)}
-                                required
-                                style={styles.select}
-                            >
-                                <option value="">Select exercise</option>
-                                {exercises.map((ex) => (
-                                    <option key={ex._id} value={ex._id}>{ex.name}</option>
-                                ))}
-                            </select>
+                                onChange={(id) => updateSet(i, 'exercise', id)}
+                            />
                             <input
                                 type="number"
                                 placeholder="Reps"
